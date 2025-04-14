@@ -1,0 +1,11 @@
+meta:
+  environment: python
+  toolchain:
+    name: pip
+    version: 3.9
+build:
+  requirementsPath: service_requirements.txt
+run:
+  scriptName: service/telegram_bot.py
+  persistenceMount: /data
+  containerPort: 80
