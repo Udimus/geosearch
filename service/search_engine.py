@@ -12,7 +12,7 @@ ALPHABET = "абвгдеёжзийклмнопрстуфхцчшщъыьэюя"
 ALPHABET_DICT = {letter: index + 1
     for index, letter in enumerate(ALPHABET)
 }
-DATA_PATH = os.path.join(os.path.dirname(os.getcwd()), "data")
+DATA_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))), "data")
 SEP = "\t"
 ORDINAL_PATTERN = re.compile(r'[0-9]+-[\w]+')
 NUM_PATTERN = re.compile(r'[0-9]+')
@@ -66,7 +66,7 @@ def check_equation(street_name: str, house_num: int, equation_pattern: str, indi
     equation = equation_pattern.format(*street_nums)
     return eval(equation) == house_num
 
-def get_address(x):
+def get_address(x) -> str:
     parts = []
     parts.append("{} {}".format(x["street_name"], x["street_type"]))
     parts.append("{} {}".format(x["house_num"], x["house_type"]))
