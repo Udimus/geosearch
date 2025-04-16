@@ -86,10 +86,12 @@ def _search(update: Update) -> str:
     if searcher_hash is None:
         return NO_TAGS_MESSAGE
     s = searchers[searcher_hash]
+    subnumbers = get_user_state(update.message.from_user.id).get("subnumbers", False)
+    formula = update.message.text
     try:
-        subnumbers = get_user_state(update.message.from_user.id).get("subnumbers", False)
-        return "\n".join(s.search(update.message.text, subnumbers))
-    except:
+        return "\n".join(s.search(formula, subnumbers))
+    except Exception as e:
+        logger.error(f"Problem with formula |{formula}|, got error: {e}")
         return "Что-то пошло не так. Проверьте корректность формулы."
     
 async def search(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:

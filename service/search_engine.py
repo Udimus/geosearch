@@ -59,6 +59,8 @@ def process_formula(formula: str) -> Tuple[str, List[int]]:
     return pattern, indices
 
 def check_equation(street_name: str, house_num: int, equation_pattern: str, indices: List[int]) -> bool:
+    if len(indices) == 0:
+        return eval(equation_pattern) == house_num
     if max(indices) > len(street_name):
         return False
     street_nums = [ALPHABET_DICT[street_name[i-1]] for i in indices]
