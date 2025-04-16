@@ -7,5 +7,5 @@ build:
   requirementsPath: service_requirements.txt
 run:
   scriptName: service/telegram_bot.py
-  persistenceMount: /data
+  persistenceMount: /app/data
   containerPort: 80
