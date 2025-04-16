@@ -1,5 +1,4 @@
 import os
-import requests
 import re
 from getpass import getpass
 from typing import List, Tuple
@@ -86,7 +85,7 @@ class HouseSearcher:
         self._houses_df = load_addresses().merge(house_with_tags)
         self._houses_df["street_name_processed"] = self._houses_df["street_name"].apply(
             lambda x: re.sub(ORDINAL_PATTERN, lambda x: num2text(x.group(0)), x).lower().replace(" ", ""))
-        self._houses_df["house_num_processed"] = self._houses_df["house_num"].apply(lambda x: int(re.findall("[0-9]+", x)[0]))
+        self._houses_df["house_num_processed"] = self._houses_df["house_num"].apply(lambda x: int(re.findall(NUM_PATTERN, x)[0]))
 
     def __hash__(self):
         return hash_tags(self._found_tags)
