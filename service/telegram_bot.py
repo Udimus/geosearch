@@ -80,6 +80,8 @@ async def set_subnumbers(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
     flag = context.args[0]
     if flag == "1":
         update_user_state(update.message.from_user.id, "subnumbers", True)
+    elif flag == "0":
+        update_user_state(update.message.from_user.id, "subnumbers", False)
 
 def _search(update: Update) -> str:
     searcher_hash = check_searcher(update.message.from_user.id)
