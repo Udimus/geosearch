@@ -59,8 +59,8 @@ async def stop(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     clean_user_state(update.message.from_user.id)
     await update.message.reply_text("Сессия завершена.")
 
-async def tags(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    log_user_action(update, "tags")
+async def set_tags(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    log_user_action(update, "set_tags")
     tags = context.args
     input_tags_hash = hash_tags(tags)
     user_id = update.message.from_user.id
@@ -75,8 +75,8 @@ async def tags(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     text = f"Текущий поиск по тэгам: {tags_string}"
     await context.bot.send_message(chat_id=update.effective_chat.id, text=text)
 
-async def subnumbers(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    log_user_action(update, "subnumbers")
+async def set_subnumbers(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    log_user_action(update, "set_subnumbers")
     flag = context.args[0]
     if flag == "1":
         update_user_state(update.message.from_user.id, "subnumbers", True)
@@ -89,7 +89,10 @@ def _search(update: Update) -> str:
     subnumbers = get_user_state(update.message.from_user.id).get("subnumbers", False)
     formula = update.message.text
     try:
-        return "\n".join(s.search(formula, subnumbers))
+        search_results = s.search(formula, subnumbers)
+        text = f"Найдено {len(search_results)} адресов:\n\n"
+        text += "\n".join(search_results)
+        return text
     except Exception as e:
         logger.error(f"Problem with formula |{formula}|, got error: {e}")
         return "Что-то пошло не так. Проверьте корректность формулы."
@@ -98,15 +101,18 @@ async def search(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     log_user_action(update, "search")
     await update.message.reply_text(_search(update))
 
-def _streets(update: Update) -> str:
+def _get_streets(update: Update) -> str:
     searcher_hash = check_searcher(update.message.from_user.id)
     if searcher_hash is None:
         return NO_TAGS_MESSAGE
-    return "\n".join(searchers[searcher_hash].get_all_streets())
+    streets_list = searchers[searcher_hash].get_all_streets()
+    text = f"Найдено {len(streets_list)} улиц:\n\n"
+    text += "\n".join(streets_list)
+    return text
 
-async def streets(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    log_user_action(update, "streets")
-    await update.message.reply_text(_streets(update))
+async def get_streets(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    log_user_action(update, "get_streets")
+    await update.message.reply_text(_get_streets(update))
 
 # async def location(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 #     message = update.message
@@ -150,9 +156,9 @@ def main() -> None:
     application.add_handler(CommandHandler("stop", stop, has_args=False))
     application.add_handler(CommandHandler("help", get_help, has_args=False))
     application.add_handler(CommandHandler("state", get_state, has_args=False))
-    application.add_handler(CommandHandler("streets", streets, has_args=False))
-    application.add_handler(CommandHandler("tags", tags, has_args=True))
-    application.add_handler(CommandHandler("subnumbers", subnumbers, has_args=1))
+    application.add_handler(CommandHandler("streets", get_streets, has_args=False))
+    application.add_handler(CommandHandler("tags", set_tags, has_args=True))
+    application.add_handler(CommandHandler("subnumbers", set_subnumbers, has_args=1))
     
     # application.add_handler(MessageHandler(filters.LOCATION & ~filters.COMMAND, location))
     application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, search))
