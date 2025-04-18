@@ -53,7 +53,7 @@ def num2text(input_string):
     return text[:-2] + "ья"
 
 def process_formula(formula: str) -> Tuple[str, List[int]]:
-    letter_index_pattern = re.compile(r'X([0-9]+)')
+    letter_index_pattern = re.compile(r'[XxХх]([0-9]+)')
     indices = list(map(int, letter_index_pattern.findall(formula)))
     pattern = re.sub(letter_index_pattern, "{}", formula)
     return pattern, indices
